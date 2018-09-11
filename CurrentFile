@@ -49,6 +49,14 @@ void setup() {
     client.connect(server,8001);
   }
   Serial.println("Connected to Server");
+   float LeftBound[];
+ float RightBound[];
+ float TopBound[];
+ float BottomBound[];
+ float goalLeft[];
+ float goalRight[];
+ float midpoint[];
+ 
 }
 
 void loop() {
@@ -61,13 +69,13 @@ void loop() {
   }
 
 void CreateMap(float c1x,float c1y,float c2x,float c2y,float c3x,float c3y,float c4x,float c4y){
- float LeftBound[4];
- float RightBound[4];
- float TopBound[4];
- float BottomBound[4];
- float goalLeft[4];
- float goalRight[4];
- float midpoint[2];
+ float LeftBound[]={c2x,c1x,c1y,c2y};
+ float RightBound[4]={c3x,c4x,c3y,c4y};
+ float TopBound[4]={c1x,c3x,c1y,c3y}
+ float BottomBound[]={c2x.c4x,c4y,c2y};
+ float goalLeft[]=c2x,c1x,(c1y+c2y)/4,3(c1y+c2y)/4 ;
+ float goalRight[]=c3x,c4x,(c3y+c4y)/4,3(c3y+c4y)/4;
+ float midpoint=(c2x+c1x+c0x+c4x)/4;
  
  
 
