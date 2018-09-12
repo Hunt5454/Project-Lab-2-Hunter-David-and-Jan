@@ -89,8 +89,14 @@ float Blue_Team_Data_Triangle_Object_Center_Y = Blue_Team_Data_Triangle["Object 
 
 
   // Print value as test.
-  std::cout << Corners0_X << std::endl;
- 
+  std::cout << "The X coordinate of Corner 0 is "<<Corners0_X << std::endl;
+ std::cout << "The Y coordinate of Corner 0 is "<<Corners0_Y << std::endl;
+ std::cout << "The X coordinate of Corner 1 is "<<Corners1_X << std::endl;
+ std::cout << "The Y coordinate of Corner 1 is "<<Corners1_Y << std::endl;
+ std::cout << "The X coordinate of Corner 2 is "<<Corners2_X << std::endl;
+ std::cout << "The Y coordinate of Corner 2 is "<<Corners2_Y << std::endl;
+ std::cout << "The X coordinate of Corner 3 is "<<Corners3_X << std::endl;
+ std::cout << "The Y coordinate of Corner 3 is "<<Corners3_Y << std::endl;
     
   return 0;
 }
