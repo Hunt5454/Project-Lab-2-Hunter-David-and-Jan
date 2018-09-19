@@ -3,12 +3,43 @@
 // See https://bblanchon.github.io/ArduinoJson/assistant/
 #include <iostream>
 #include "ArduinoJson.h"
+#include <string>
+void CreateMap(float c1x,float c1y,float c2x,float c2y,float c3x,float c3y,float c4x,float c4y);
+ int EnemyGoalCheck(int team);
+bool ballhalf(int team);
+//int GoalPath(int team, string shape);
+ int Infront(int team,  char shape);
+//bool BallClose(int team, const char* shape);
+int behind(int team,  char shape);
+     float LeftBound[4];
+ float RightBound[4];
+ float TopBound[4];
+ float BottomBound[4];
+ float goalLeft[4];
+ float goalRight[4];
+ float midpoint;
+float BTX;
+float BTY;
+float BSX;
+float BSY;
+float BCX;
+float BCY;
+float RTX;
+float RTY;
+float RSX;
+float RSY;
+float RCX;
+float RCY;
+float BX;
+float BY;
+
 
 int main()
 {
   // Memory pool for JSON object tree.
 
   
+ 
  const size_t bufferSize = JSON_ARRAY_SIZE(4) + 11*JSON_OBJECT_SIZE(2) + 2*JSON_OBJECT_SIZE(3) + 8*JSON_OBJECT_SIZE(4) + 7*JSON_OBJECT_SIZE(6) + 1410;
 DynamicJsonBuffer jsonBuffer(bufferSize);
 
@@ -21,8 +52,8 @@ DynamicJsonBuffer jsonBuffer(bufferSize);
 
 JsonObject& Ball = root["Ball"];
 
-float Ball_Object_Center_X = Ball["Object Center"]["X"]; // 240.1168
-float Ball_Object_Center_Y = Ball["Object Center"]["Y"]; // 149.2336
+float BX = Ball["Object Center"]["X"]; // 240.1168
+float BY = Ball["Object Center"]["Y"]; // 149.2336
 
 
 int Ball_Area = Ball["Area"]; // 137
@@ -48,44 +79,44 @@ JsonObject& Red_Team_Data = root["Red Team Data"];
 
 JsonObject& Red_Team_Data_Circle = Red_Team_Data["Circle"];
 
-float Red_Team_Data_Circle_Object_Center_X = Red_Team_Data_Circle["Object Center"]["X"]; // 137.058
-float Red_Team_Data_Circle_Object_Center_Y = Red_Team_Data_Circle["Object Center"]["Y"]; // 103.4375
+float RCX = Red_Team_Data_Circle["Object Center"]["X"]; // 137.058
+float RCY = Red_Team_Data_Circle["Object Center"]["Y"]; // 103.4375
 
 
 
 JsonObject& Red_Team_Data_Square = Red_Team_Data["Square"];
 
-float Red_Team_Data_Square_Object_Center_X = Red_Team_Data_Square["Object Center"]["X"]; // 87.07018
-float Red_Team_Data_Square_Object_Center_Y = Red_Team_Data_Square["Object Center"]["Y"]; // 91.53947
+float RSX = Red_Team_Data_Square["Object Center"]["X"]; // 87.07018
+float RSY = Red_Team_Data_Square["Object Center"]["Y"]; // 91.53947
 
 
 
 JsonObject& Red_Team_Data_Triangle = Red_Team_Data["Triangle"];
 
-float Red_Team_Data_Triangle_Object_Center_X = Red_Team_Data_Triangle["Object Center"]["X"]; // 133.7784
-float Red_Team_Data_Triangle_Object_Center_Y = Red_Team_Data_Triangle["Object Center"]["Y"]; // 58.8125
+float RTX = Red_Team_Data_Triangle["Object Center"]["X"]; // 133.7784
+float RTY= Red_Team_Data_Triangle["Object Center"]["Y"]; // 58.8125
 
 
 JsonObject& Blue_Team_Data = root["Blue Team Data"];
 
 JsonObject& Blue_Team_Data_Circle = Blue_Team_Data["Circle"];
 
-float Blue_Team_Data_Circle_Object_Center_X = Blue_Team_Data_Circle["Object Center"]["X"]; // 355.0485
-float Blue_Team_Data_Circle_Object_Center_Y = Blue_Team_Data_Circle["Object Center"]["Y"]; // 119.489
+BCX= Blue_Team_Data_Circle["Object Center"]["X"]; // 355.0485
+BCY = Blue_Team_Data_Circle["Object Center"]["Y"]; // 119.489
 
 
 JsonObject& Blue_Team_Data_Square = Blue_Team_Data["Square"];
 
-float Blue_Team_Data_Square_Object_Center_X = Blue_Team_Data_Square["Object Center"]["X"]; // 291.5776
-float Blue_Team_Data_Square_Object_Center_Y = Blue_Team_Data_Square["Object Center"]["Y"]; // 95.96983
+BSX = Blue_Team_Data_Square["Object Center"]["X"]; // 291.5776
+BSY = Blue_Team_Data_Square["Object Center"]["Y"]; // 95.96983
 
 
 
 
 JsonObject& Blue_Team_Data_Triangle = Blue_Team_Data["Triangle"];
 
-float Blue_Team_Data_Triangle_Object_Center_X = Blue_Team_Data_Triangle["Object Center"]["X"]; // 291.5459
-float Blue_Team_Data_Triangle_Object_Center_Y = Blue_Team_Data_Triangle["Object Center"]["Y"]; // 54.35204
+BTX = Blue_Team_Data_Triangle["Object Center"]["X"]; // 291.5459
+BTY = Blue_Team_Data_Triangle["Object Center"]["Y"]; // 54.35204
 
 
   // Print value as test.
@@ -97,6 +128,189 @@ float Blue_Team_Data_Triangle_Object_Center_Y = Blue_Team_Data_Triangle["Object 
  std::cout << "The Y coordinate of Corner 2 is "<<Corners2_Y << std::endl;
  std::cout << "The X coordinate of Corner 3 is "<<Corners3_X << std::endl;
  std::cout << "The Y coordinate of Corner 3 is "<<Corners3_Y << std::endl;
+   CreateMap(Corners0_X,Corners0_Y,Corners1_X,Corners1_Y,Corners2_X,Corners2_Y,Corners3_X,Corners3_Y);
+    std::cout << "midpoint is "<<midpoint << std::endl;
+    std::cout << "Amount in Enemy GoalBox is "<<EnemyGoalCheck(1) << std::endl;
+    if (ballhalf(1)) 
+    {   std::cout << "Ball is on  Enemy Half" << std::endl;
+    }
+    else
+    {
+        std::cout<<"Ball is on  Our Half"<<std::endl;
+    }
     
+    std::cout<<"Enemy Players in front of Square: " <<Infront(1, 'S')<<std::endl;
+    std::cout<<"Enemy Players behind Circle: " <<behind(1, 'C')<<std::endl;
+    std::cout<<"Enemy Players in front of Triangle: " <<Infront(1, 'T')<<std::endl;
   return 0;
+} 
+
+
+
+
+void CreateMap(float c1x,float c1y,float c2x,float c2y,float c3x,float c3y,float c4x,float c4y){
+  LeftBound[0]=c2x;
+  LeftBound[1]=c1x;
+    LeftBound[2]=c1y;
+    LeftBound[3]=c2y;
+  RightBound[0]=c3x;
+    RightBound[1]=c4x;
+    RightBound[2]=c3y;
+    RightBound[3]=c4y;
+  TopBound[0]=c1x;
+    TopBound[1]=c3x;
+    TopBound[2]=c1y;
+    TopBound[3]=c3y;
+  BottomBound[0]=c2x;
+     BottomBound[1]=c4x;
+     BottomBound[2]=c4y;
+     BottomBound[3]=c2y;
+  goalLeft[0]=c2x;
+    goalLeft[1]=c1x ;
+    goalLeft[2]=(c1y+c2y)/4;
+    goalLeft[3]=3*(c1y+c2y)/4;
+  goalRight[0]=c3x;
+     goalRight[1]=c4x;
+     goalRight[2]=(c3y+c4y)/4;
+     goalRight[3]=3*(c3y+c4y)/4;
+  midpoint=(c2x+c1x+c3x+c4x)/4;
 }
+int EnemyGoalCheck(int team){
+    int count =0;
+    if(team)
+    {
+     
+          if  (((BTX <goalRight[2]-30 &&  BTX >goalRight[1])) && ((BTY >goalRight[2]) &&  (BTY <goalRight[1])) )
+          {
+              count++;
+    }
+  if  (((BCX <goalRight[2]-60 &&  BCX >goalRight[1])) && ((BCY >goalRight[2]) &&  (BCY <goalRight[1])) )
+    {
+        count++;
+    }
+        
+ if  (((BSX <goalRight[2]-30 &&  BSX >goalRight[1])) && ((BSY >goalRight[2]) &&  (BSY <goalRight[1])) )    {
+        count++;
+    }
+    }
+        return count;
+
+}
+
+
+bool ballhalf(int team){
+    
+    if (team){
+        
+        if (BX>midpoint){
+            return true;
+        }
+   }
+    else {
+        return false;
+    }
+    
+   
+}
+
+int Infront(int team, char shape){
+    int frontcount=0;
+    if (team){
+        
+       if (shape=='S')
+       {
+          if(BTX>RSX){
+              frontcount++;
+       }
+            if(BCX>RSX){
+              frontcount++;
+       }
+            if(BSX>RSX){
+              frontcount++;
+       }
+           return frontcount;
+       }
+           
+           if (shape=='C')
+              {
+          if(BTX>RCX){
+              frontcount++;
+       }
+            if(BCX>RCX){
+              frontcount++;
+       }
+            if(BSX>RCX){
+              frontcount++;
+       }
+           return frontcount;
+       }
+               
+               if(shape=='T')
+                  {
+          if(BTX>RTX){
+              frontcount++;
+       }
+            if(BCX>RTX){
+              frontcount++;
+       }
+            if(BSX>RTX){
+              frontcount++;
+       }
+           return frontcount;
+       }
+    }
+}
+
+int behind(int team, char shape){
+    int frontcount=0;
+    if (team){
+        
+       if (shape=='S')
+       {
+          if(BTX<RSX){
+              frontcount++;
+       }
+            if(BCX<RSX){
+              frontcount++;
+       }
+            if(BSX<RSX){
+              frontcount++;
+       }
+           return frontcount;
+       }
+           
+           if (shape=='C')
+              {
+          if(BTX<RCX){
+              frontcount++;
+       }
+            if(BCX<RCX){
+              frontcount++;
+       }
+            if(BSX<RCX){
+              frontcount++;
+       }
+           return frontcount;
+       }
+               
+               if(shape=='T')
+                  {
+          if(BTX<RTX){
+              frontcount++;
+       }
+            if(BCX<RTX){
+              frontcount++;
+       }
+            if(BSX<RTX){
+              frontcount++;
+       }
+           return frontcount;
+       }
+    }
+}
+
+
+
+
+
+
