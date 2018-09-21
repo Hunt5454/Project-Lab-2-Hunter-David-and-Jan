@@ -1,0 +1,35 @@
+
+# importing the requests library
+import requests
+import json
+
+# api-endpoint
+URL = "http://172.22.11.2:8001/FieldData/GetData"
+
+# location given here
+#location = "delhi technological university"
+
+# defining a params dict for the parameters to be sent to the API
+#PARAMS = {'address': location}
+
+# sending get request and saving the response as response object
+r = requests.get(URL)
+
+# extracting data in json format
+data = json.loads(r)
+
+# extracting latitude, longitude and formatted address
+# of the first matching location
+
+
+BX = data["Ball"]["Object Center"]["X"]
+BY = data["Ball"]["Object Center"]["Y"]
+
+C0X = data["Corners"][0]["X"]
+C0Y = data["Corners"][0]["Y"]
+
+C1X = data["Corners"][1]["X"]
+C1Y = data["Corners"][1]["Y"]
+
+C2X = data["Corners"][2]["X"]
+C2Y = data["Corners"][2]["Y"]
