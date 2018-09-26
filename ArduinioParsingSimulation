@@ -6,6 +6,7 @@
 #include <string>
 void CreateMap(float c1x,float c1y,float c2x,float c2y,float c3x,float c3y,float c4x,float c4y);
  int EnemyGoalCheck(int team);
+ float EnemyGoalCheckSpace(int team, int number);
 bool ballhalf(int team);
 bool half(int team, char shape);
 //int GoalPath(int team, string shape);
@@ -17,7 +18,8 @@ int mostspace(int team, char shape);
 bool triangleopen(int team);
 void circlekick(int team);
 void trianglekick(int team);
-     float LeftBound[4];
+int goalspace(int team);
+float LeftBound[4];
  float RightBound[4];
  float TopBound[4];
  float BottomBound[4];
@@ -39,7 +41,9 @@ float RCY;
 float BX;
 float BY;
 float halfy;
-
+float rsx;
+float rtx;
+float rcx;
 
 int main()
 {
@@ -149,7 +153,7 @@ BTY = Blue_Team_Data_Triangle["Object Center"]["Y"]; // 54.35204
     
    // std::cout<<"Enemy Players in front of Square: " <<Infront(1, 'S')<<std::endl;
    // std::cout<<"Enemy Players behind Circle: " <<behind(1, 'C')<<std::endl;
-    std::cout<<"Enemy Players in front of Triangle: " <<Infront(1, 'T')<<std::endl;
+    //std::cout<<"Enemy Players in front of Triangle: " <<Infront(1, 'T')<<std::endl;
    // hasBall(1,'S');
    // std::cout<<"Ball x: "<<BX<<std::endl;
    // std::cout<<"Ball y: "<<BY<<std::endl;
@@ -182,7 +186,11 @@ BTY = Blue_Team_Data_Triangle["Object Center"]["Y"]; // 54.35204
     BCY=90;
     RSX=20;
     RSY=117;
-    RTX=317;
+    rtx=RTX;
+    rsx=RSX;
+    rcx=RCX;
+    //std::cout<<RTX<<std::endl;
+   
     RTY=111;
     RCX=180;
     RCY=155;
@@ -191,7 +199,11 @@ BTY = Blue_Team_Data_Triangle["Object Center"]["Y"]; // 54.35204
     CreateMap(Corners0_X,Corners0_Y,Corners1_X,Corners1_Y,Corners2_X,Corners2_Y,Corners3_X,Corners3_Y);
    //std::cout<<"Is circle on offensive or defenseive"<< half(1,'C')<<std::endl;
     ////////Kicking 2
+    //std::cout<<RTX<<std::endl;
+   
   trianglekick(1);
+    //::cout<<RTX<<std::endl;
+   
   return 0;
 } 
 
@@ -271,27 +283,30 @@ int Infront(int team, char shape){
         
        if (shape=='S')
        {
-          if(BTX>RSX){
+          if(BTX>rsx){
               frontcount++;
+            //  std::cout<<frontcount<<std::endl;
        }
-            if(BCX>RSX){
+            if(BCX>rsx){
               frontcount++;
+               //   std::cout<<frontcount<<std::endl;
        }
             if(BSX>RSX){
               frontcount++;
+                 // std::cout<<frontcount<<std::endl;
        }
            return frontcount;
        }
            
            if (shape=='C')
               {
-          if(BTX>RCX){
+          if(BTX>rcx){
               frontcount++;
        }
-            if(BCX>RCX){
+            if(BCX>rcx){
               frontcount++;
        }
-            if(BSX>RCX){
+            if(BSX>rcx){
               frontcount++;
        }
            return frontcount;
@@ -299,15 +314,20 @@ int Infront(int team, char shape){
                
                if(shape=='T')
                   {
-          if(BTX>RTX){
+          if(BTX>rtx){
               frontcount++;
+               
        }
-            if(BCX>RTX){
+            if(BCX>rtx){
               frontcount++;
+                
+                  
        }
-            if(BSX>RTX){
+            if(BSX>rtx){
               frontcount++;
-       }
+                
+                  
+       }      
            return frontcount;
        }
     }
@@ -351,11 +371,46 @@ void hasBall(int team, char shape){
     
     
     
+    float EnemyGoalCheckSpace(int team, int number){
+        
+        
+        
+         if(team&&(number==1))
+    {
+     
+          if  (((BTX >goalRight[0]-30 &&  BTX <goalRight[1])) && ((BTY >goalRight[2]) &&  (BTY <goalRight[3])) )
+          {
+             return BTY ;
+    }
+  if  (((BCX >goalRight[0]-30 &&  BCX <goalRight[1])) && ((BCY >goalRight[2]) &&  (BCY <goalRight[3])) )
+    {
+        return BCY;
+    }
+        
+ if  (((BSX >goalRight[0]-30 &&  BSX <goalRight[1])) && ((BSY >goalRight[2]) &&  (BSY <goalRight[3])) )    {
+      return BSY;
+    }
+    }
+       
+        
+        
+        
+    }
     
+int goalspace(int team){
+if (team){
     
+    if (EnemyGoalCheckSpace(team,EnemyGoalCheck(team))>halfy){
+        return 3;
     
+}
+    else if (EnemyGoalCheckSpace(team,EnemyGoalCheck(team))<halfy)
+    {
+    return 1;
+    }
+}
     
-    
+}
     
 int behind(int team, char shape){
     int frontcount=0;
@@ -515,10 +570,15 @@ void trianglekick(int team){
 
  if(EnemyGoalCheck(team)==1){
      std::cout<<"1 in the goalbox"<<std::endl;
-     std::cout<<Infront(team,'T')<<std::endl;
+   //std::cout<<Infront(team,'T')<<std::endl;
      if (1-Infront(team,'T')==0){
          std::cout<<"No others in front"<<std::endl;
-     std::cout<<"Triangle shoots to the left of goal"<<std::endl;
+     if (goalspace(team)==1){
+         std::cout<<"Kick Left"<<std::endl;
+     }
+         if (goalspace(team)==3){
+         std::cout<<"Kick Right"<<std::endl;
+     }
      }
  }
      
