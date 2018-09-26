@@ -7,6 +7,7 @@
 void CreateMap(float c1x,float c1y,float c2x,float c2y,float c3x,float c3y,float c4x,float c4y);
  int EnemyGoalCheck(int team);
 bool ballhalf(int team);
+bool half(int team, char shape);
 //int GoalPath(int team, string shape);
  int Infront(int team,  char shape);
 //bool BallClose(int team, const char* shape);
@@ -14,6 +15,8 @@ int behind(int team,  char shape);
 void hasBall(int team, char shape);
 int mostspace(int team, char shape);
 bool triangleopen(int team);
+void circlekick(int team);
+void trianglekick(int team);
      float LeftBound[4];
  float RightBound[4];
  float TopBound[4];
@@ -133,26 +136,62 @@ BTY = Blue_Team_Data_Triangle["Object Center"]["Y"]; // 54.35204
  //std::cout << "The X coordinate of Corner 3 is "<<Corners3_X << std::endl;
  //std::cout << "The Y coordinate of Corner 3 is "<<Corners3_Y << std::endl;
    CreateMap(Corners0_X,Corners0_Y,Corners1_X,Corners1_Y,Corners2_X,Corners2_Y,Corners3_X,Corners3_Y);
-    std::cout << "midpoint is "<<midpoint << std::endl;
-    std::cout << "Amount in Enemy GoalBox is "<<EnemyGoalCheck(1) << std::endl;
-    if (ballhalf(1)) 
+    //std::cout << "midpoint is "<<midpoint << std::endl;
+    //std::cout << "Amount in Enemy GoalBox is "<<EnemyGoalCheck(1) << std::endl;
+   /* if (ballhalf(1)) 
     {   std::cout << "Ball is on  Enemy Half" << std::endl;
     }
     else
     {
         std::cout<<"Ball is on  Our Half"<<std::endl;
     }
+    */
     
-    std::cout<<"Enemy Players in front of Square: " <<Infront(1, 'S')<<std::endl;
-    std::cout<<"Enemy Players behind Circle: " <<behind(1, 'C')<<std::endl;
+   // std::cout<<"Enemy Players in front of Square: " <<Infront(1, 'S')<<std::endl;
+   // std::cout<<"Enemy Players behind Circle: " <<behind(1, 'C')<<std::endl;
     std::cout<<"Enemy Players in front of Triangle: " <<Infront(1, 'T')<<std::endl;
-    hasBall(1,'S');
-    std::cout<<"Ball x: "<<BX<<std::endl;
-    std::cout<<"Ball y: "<<BY<<std::endl;
-    std::cout<<"Red Square x: "<<RSX<<std::endl;
-    std::cout<<"Red Square y: " <<RSY<<std::endl;
-    mostspace(1,'S');
-    std::cout<<triangleopen(1)<<std::endl;
+   // hasBall(1,'S');
+   // std::cout<<"Ball x: "<<BX<<std::endl;
+   // std::cout<<"Ball y: "<<BY<<std::endl;
+   // std::cout<<"Red Square x: "<<RSX<<std::endl;
+  //  std::cout<<"Red Square y: " <<RSY<<std::endl;
+  //  mostspace(1,'S');
+  // triangleopen(1);
+   ////// Kicking1
+    BSX=408;
+    BSY=116;
+    BTX=130;
+    BTY=130;
+    BCX=164;
+    BCY=113;
+    RSX=20;
+    RSY=117;
+    RTX=317;
+    RTY=111;
+    RCX=180;
+    RCY=155;
+    BX=183;
+    BY=152;
+    CreateMap(Corners0_X,Corners0_Y,Corners1_X,Corners1_Y,Corners2_X,Corners2_Y,Corners3_X,Corners3_Y);
+    circlekick(1);
+    BSX=412;
+    BSY=100;
+    BTX=130;
+    BTY=130;
+    BCX=200;
+    BCY=90;
+    RSX=20;
+    RSY=117;
+    RTX=317;
+    RTY=111;
+    RCX=180;
+    RCY=155;
+    BX=315;
+    BY=113;
+    CreateMap(Corners0_X,Corners0_Y,Corners1_X,Corners1_Y,Corners2_X,Corners2_Y,Corners3_X,Corners3_Y);
+   //std::cout<<"Is circle on offensive or defenseive"<< half(1,'C')<<std::endl;
+    ////////Kicking 2
+  trianglekick(1);
   return 0;
 } 
 
@@ -181,10 +220,10 @@ void CreateMap(float c1x,float c1y,float c2x,float c2y,float c3x,float c3y,float
     goalLeft[1]=c1x ;
     goalLeft[2]=(c1y+c2y)/4;
     goalLeft[3]=3*(c1y+c2y)/4;
-  goalRight[0]=c3x;
-     goalRight[1]=c4x;
-     goalRight[2]=(c3y+c4y)/4;
-     goalRight[3]=3*(c3y+c4y)/4;
+  goalRight[0]=c4x;
+     goalRight[1]=c2x;
+     goalRight[2]=(c2y+c4y)/4;
+     goalRight[3]=3*(c2y+c4y)/4;
   midpoint=(c2x+c1x+c3x+c4x)/4;
   halfy=(c1y+c2y+c3y+c4y)/4;
 }
@@ -193,16 +232,16 @@ int EnemyGoalCheck(int team){
     if(team)
     {
      
-          if  (((BTX <goalRight[2]-30 &&  BTX >goalRight[1])) && ((BTY >goalRight[2]) &&  (BTY <goalRight[1])) )
+          if  (((BTX >goalRight[0]-30 &&  BTX <goalRight[1])) && ((BTY >goalRight[2]) &&  (BTY <goalRight[3])) )
           {
               count++;
     }
-  if  (((BCX <goalRight[2]-60 &&  BCX >goalRight[1])) && ((BCY >goalRight[2]) &&  (BCY <goalRight[1])) )
+  if  (((BCX >goalRight[0]-30 &&  BCX <goalRight[1])) && ((BCY >goalRight[2]) &&  (BCY <goalRight[3])) )
     {
         count++;
     }
         
- if  (((BSX <goalRight[2]-30 &&  BSX >goalRight[1])) && ((BSY >goalRight[2]) &&  (BSY <goalRight[1])) )    {
+ if  (((BSX >goalRight[0]-30 &&  BSX <goalRight[1])) && ((BSY >goalRight[2]) &&  (BSY <goalRight[3])) )    {
         count++;
     }
     }
@@ -395,8 +434,8 @@ int mostspace(int team, char shape){
        
            if (Infront(team,shape)==3){
                float avy=(BTY+BSY+BCY)/3;
-               std::cout<<avy<<std::endl;
-                std::cout<<halfy<<std::endl;
+               std::cout<<"Average of the Three Enemies "<<avy<<std::endl;
+                std::cout<<"Halfy line "<<halfy<<std::endl;
                if(avy>halfy) {
             
                    std::cout<<"Most Space left"<<std::endl;
@@ -462,5 +501,54 @@ int mostspace(int team, char shape){
               
 }
     
+    void circlekick(int team){
+   
+        if (half(1,'C')==0){
+        std::cout<<"Circle on Defensive Half"<<std::endl;
+        if (triangleopen(1)){
+            std::cout<<"Triangle is open so Circle will attempt pass to Triangle"<<std::endl;
+    }
+    }
+    }
+void trianglekick(int team){
+    std::cout<<"Triangle has ball"<<std::endl;
+
+ if(EnemyGoalCheck(team)==1){
+     std::cout<<"1 in the goalbox"<<std::endl;
+     std::cout<<Infront(team,'T')<<std::endl;
+     if (1-Infront(team,'T')==0){
+         std::cout<<"No others in front"<<std::endl;
+     std::cout<<"Triangle shoots to the left of goal"<<std::endl;
+     }
+ }
+     
+
+}
+
+bool half(int team, char shape){
+
     
+      if (team){
+        if (shape=='S'){
+        if (RSX>midpoint){
+            return true;
+        }
+   }
+          if (shape=='C'){
+               if (RCX>midpoint){
+            return true;
+        }
+          }
+          if (shape=='T'){
+               if (RTX>midpoint){
+            return true;
+        }
+          }
+    else {
+        return false;
+    }
+      } 
+    
+   
+}
     
