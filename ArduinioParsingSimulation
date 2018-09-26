@@ -11,6 +11,9 @@ bool ballhalf(int team);
  int Infront(int team,  char shape);
 //bool BallClose(int team, const char* shape);
 int behind(int team,  char shape);
+void hasBall(int team, char shape);
+int mostspace(int team, char shape);
+bool triangleopen(int team);
      float LeftBound[4];
  float RightBound[4];
  float TopBound[4];
@@ -32,6 +35,7 @@ float RCX;
 float RCY;
 float BX;
 float BY;
+float halfy;
 
 
 int main()
@@ -120,14 +124,14 @@ BTY = Blue_Team_Data_Triangle["Object Center"]["Y"]; // 54.35204
 
 
   // Print value as test.
-  std::cout << "The X coordinate of Corner 0 is "<<Corners0_X << std::endl;
- std::cout << "The Y coordinate of Corner 0 is "<<Corners0_Y << std::endl;
- std::cout << "The X coordinate of Corner 1 is "<<Corners1_X << std::endl;
- std::cout << "The Y coordinate of Corner 1 is "<<Corners1_Y << std::endl;
- std::cout << "The X coordinate of Corner 2 is "<<Corners2_X << std::endl;
- std::cout << "The Y coordinate of Corner 2 is "<<Corners2_Y << std::endl;
- std::cout << "The X coordinate of Corner 3 is "<<Corners3_X << std::endl;
- std::cout << "The Y coordinate of Corner 3 is "<<Corners3_Y << std::endl;
+ // std::cout << "The X coordinate of Corner 0 is "<<Corners0_X << std::endl;
+ //std::cout << "The Y coordinate of Corner 0 is "<<Corners0_Y << std::endl;
+ //std::cout << "The X coordinate of Corner 1 is "<<Corners1_X << std::endl;
+// std::cout << "The Y coordinate of Corner 1 is "<<Corners1_Y << std::endl;
+ //std::cout << "The X coordinate of Corner 2 is "<<Corners2_X << std::endl;
+ //std::cout << "The Y coordinate of Corner 2 is "<<Corners2_Y << std::endl;
+ //std::cout << "The X coordinate of Corner 3 is "<<Corners3_X << std::endl;
+ //std::cout << "The Y coordinate of Corner 3 is "<<Corners3_Y << std::endl;
    CreateMap(Corners0_X,Corners0_Y,Corners1_X,Corners1_Y,Corners2_X,Corners2_Y,Corners3_X,Corners3_Y);
     std::cout << "midpoint is "<<midpoint << std::endl;
     std::cout << "Amount in Enemy GoalBox is "<<EnemyGoalCheck(1) << std::endl;
@@ -142,8 +146,16 @@ BTY = Blue_Team_Data_Triangle["Object Center"]["Y"]; // 54.35204
     std::cout<<"Enemy Players in front of Square: " <<Infront(1, 'S')<<std::endl;
     std::cout<<"Enemy Players behind Circle: " <<behind(1, 'C')<<std::endl;
     std::cout<<"Enemy Players in front of Triangle: " <<Infront(1, 'T')<<std::endl;
+    hasBall(1,'S');
+    std::cout<<"Ball x: "<<BX<<std::endl;
+    std::cout<<"Ball y: "<<BY<<std::endl;
+    std::cout<<"Red Square x: "<<RSX<<std::endl;
+    std::cout<<"Red Square y: " <<RSY<<std::endl;
+    mostspace(1,'S');
+    std::cout<<triangleopen(1)<<std::endl;
   return 0;
 } 
+
 
 
 
@@ -174,6 +186,7 @@ void CreateMap(float c1x,float c1y,float c2x,float c2y,float c3x,float c3y,float
      goalRight[2]=(c3y+c4y)/4;
      goalRight[3]=3*(c3y+c4y)/4;
   midpoint=(c2x+c1x+c3x+c4x)/4;
+  halfy=(c1y+c2y+c3y+c4y)/4;
 }
 int EnemyGoalCheck(int team){
     int count =0;
@@ -260,7 +273,51 @@ int Infront(int team, char shape){
        }
     }
 }
+void hasBall(int team, char shape){
+    if (team){
+        
+       if (shape=='S')
+       {
+       if ((BX<RSX+8 && BX>RSX)&&(BY<RSY-4 && BY>RSY+4)){
+           std::cout<<"Square Has the Ball "<<std::endl;
+           
+       }
+           else{
+           std::cout<<"Square Doesn't have the ball"<<std::endl;
+           }
+       }
+           if (shape=='C')
+           {
+               
+               if ((BX<RCX+8 && BX>RCX)&&(BY<RCY-4 && BY>RCY+4)){
+                  std::cout<<"Circle Has the Ball "<<std::endl;
+       }
+                else{
+           std::cout<<"Circle Doesn't have the ball"<<std::endl;
+           }
+           }
+               if(shape=='T')
+                  {
+        if ((BX<RTX+8 && BX>RTX)&&(BY<RTY-4 && BY>RTY+4)){
+            
+             std::cout<<"Triangle Has the Ball "<<std::endl;
+       }
+                    else{
+           std::cout<<"Triangle Doesn't have the ball"<<std::endl;
+           }
+    }
+    }
 
+}
+    
+    
+    
+    
+    
+    
+    
+    
+    
 int behind(int team, char shape){
     int frontcount=0;
     if (team){
@@ -309,8 +366,101 @@ int behind(int team, char shape){
     }
 }
 
+bool triangleopen(int team){
+    int intersectioncount=0;
+    if (team){
+   if ((BSX<RCX && BSX>RTX)&&((BSY<RCY-4 && BSY>RTY+4)||(BSY<RTY-4 && BSY>RCY+4))){
+        intersectioncount++;
+   }
+        if ((BCX<RCX && BCX>RTX)&&((BCY<RCY-4 && BCY>RTY+4)||(BCY<RTY-4 && BCY>RCY+4))){
+             intersectioncount++;
+        }
+         if ((BTX<RCX && BTX>RTX)&&((BTY<RCY-4 && BTY>RTY+4)||(BTY<RTY-4 && BTY>RCY+4))){
+             intersectioncount++;
+        }
+   if (intersectioncount==0){
+       std::cout<<"Triangle is Open"<<std::endl;
+       return true;
+   }
+        else {
+            std::cout<<"Triangle is not Open"<<std::endl;
+        return false;
+        }
+    }
+}
+        
 
-
-
-
-
+int mostspace(int team, char shape){
+    if (team){
+       
+           if (Infront(team,shape)==3){
+               float avy=(BTY+BSY+BCY)/3;
+               std::cout<<avy<<std::endl;
+                std::cout<<halfy<<std::endl;
+               if(avy>halfy) {
+            
+                   std::cout<<"Most Space left"<<std::endl;
+                    return 1;  
+             }
+              else{
+              
+                  std::cout<<"Most Space Right"<<std::endl;
+                      return 2;
+              }   
+       if (shape=='S')
+       {
+           
+      if (Infront(team,shape)==1){
+          if(BTX>RSX){
+             if(BTY<halfy) {
+                 std::cout<<"Most Space left"<<std::endl;
+                 return 1;   
+             }
+              else{
+                  std::cout<<"Most Space right"<<std::endl;
+                  
+                  return 2;
+              }
+              
+       }
+            if(BCX>RSX){
+              if(BCY<halfy) {
+             return 1;   
+                   std::cout<<"Most Space left"<<std::endl;
+             }
+              else{
+                  return 2;
+                   std::cout<<"Most Space right"<<std::endl;
+              }
+       }
+            if(BSX>RSX){
+              if(BSY<halfy) {
+             return 1;   
+             }
+              else{
+                  return 2;
+              }
+       }
+           
+           }
+      }
+           
+       }
+           
+           if (shape=='C')
+              {
+         
+       }
+               
+               if(shape=='T')
+                  {
+         
+         
+       }
+    }
+    
+              
+}
+    
+    
+    
