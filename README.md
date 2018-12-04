@@ -1,4 +1,6 @@
-# Project-Lab-2-Hunter-David-and-Jan
+# Project-Lab-2-Hunter-David-and-Demarius
 Repository For Project Lab 2 for the Fall of 2018
 
-The Repository will mostly be ran by Hunter but will also have input from David and Jan. 
+Name was implemented when jan was in my group
+
+ 
