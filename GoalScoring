@@ -1,1 +1,287 @@
 
+
+import time,serial,json,requests,math,os
+import paho.mqtt.client as mqtt
+#ser =serial.Serial('/dev/ttyUSB0',9600)
+URL= 'http://192.168.137.1:8001/FieldData/GetData'
+def on_connect(client, userdata, flags, rc):
+    print ("Connected with result code "+ str(rc))
+    client.subscribe("button")
+def on_message(client,userdata,msg):
+    print(msg.topic+" " +str(msg.payload))
+def timeturn(turn1,turn2):
+    timeturn1=round((turn1/360) * 4,2)
+    timeturn2=round((turn2/360) * 2.4,2)
+    delay=int(round(timeturn1*1000))
+    delay1=int(round(timeturn2*1000))
+    print(delay)
+    print(delay1)
+    return
+global donefol=0;
+tempdir=""
+def followx(x1,x2,tol,rep,i):
+
+    if i < rep:
+        if x1 > x2 + tol:
+            tempdir = "b"
+            print("Move Backwards")
+        elif x1 < x2 - tol:
+            tempdir = "f"
+            print("Move forward")
+        else:
+            tempdir = "s"
+            print("stop in range of ")
+            donefol=donefol+1
+def followy(x1,x2,tol,rep,i):
+
+    if i < rep:
+        if x1 > x2 + tol:
+            tempdir = "f"
+            print("Move forward")
+        elif x1 < x2 - tol:
+            tempdir = "b"
+            print("Move backward")
+        else:
+            tempdir = "s"
+            print("stop in range of ")
+            donefol = donefol + 1
+def initialturn(x1,x2,y1,y2):
+    x=x2-x1
+    y=y2-y1
+    turn1=round(math.degrees(math.atan(y/x)),0)
+    turn2=round(math.degrees(math.atan(x/y)),0)+90
+    orient1=turn1
+    orient2=turn2
+    timeturn(turn1,turn2)
+    diri="l"
+    dir1="l"
+    return
+def ballturn(x1,y1,s):
+    x=BX-x1
+    if (y1>BY):
+        y=y1-BY
+        tempdir="r"
+        tempturn=90-round(math.degrees(math.atan(y/x)))
+    elif (y1<BY):
+        y =BY - y1
+        tempdir = "r"
+        tempturn = 90+round(math.degrees(math.atan(y/x)))
+    else:
+        print("ball path go forward")
+        tempdir="f"
+    if s==0:
+        turn1=tempturn
+        diri=tempdir
+        timeturn(turn1,0)
+    elif s==1:
+        turn2=tempturn
+        dir1=tempdir
+        timeturn(0,turn2)
+def goalturn(x1,y1):
+    x=(C2X+C3X)/2-x1
+    if (y1>((C2Y+C3Y)/2)):
+        y=y1-((C2Y+C3Y)/2)
+        tempdir="l"
+        turn2=round(math.degrees(math.atan(y/x)))
+        timeturn(0,turn2)
+    elif (y1<((C2Y+C3Y)/2)):
+        y =((C2Y + C3Y) / 2) - y1
+        tempdir = "r"
+        turn2 = round(math.degrees(math.atan(y/x)))
+        timeturn(0,turn2)
+    else:
+        print("In goal go forward")
+        tempdir="f"
+    return
+global buff
+global buff1
+turncheck=0
+start=1
+kickready=0
+stopcount=0
+stopcount1=0
+stopcount2=0
+diri="s"
+output=" "
+delay=1000
+backcount=1
+dir1="s"
+kicking1="z"
+output1=" "
+delay1=1000
+initialmove=-2
+client =mqtt.Client()
+client.on_connect = on_connect
+client.on_message = on_message
+client.connect('localhost',1883,60)
+client.loop_start()
+print('Script is running, press Ctrl-c to quit...')
+while True:
+        time.sleep(.5)
+        data= requests.get('http://192.168.137.1:8001/FieldData/GetData').json()
+
+        BX = data["Ball"]["Object Center"]["X"]
+        BY = data["Ball"]["Object Center"]["Y"]
+
+        C0X = data["Corners"][0]["X"]
+        C0Y = data["Corners"][0]["Y"]
+
+        C1X = data["Corners"][1]["X"]
+        C1Y = data["Corners"][1]["Y"]
+
+        C2X = data["Corners"][2]["X"]
+        C2Y= data["Corners"][2]["Y"]
+
+        C3X = data["Corners"][3]["X"]
+        C3Y = data["Corners"][3]["Y"]
+
+        BCX = data["Red Team Data"]["Circle"]["Object Center"]["X"]
+        BCY = data["Red Team Data"]["Circle"]["Object Center"]["Y"]
+
+        RSX = data["Red Team Data"]["Square"]["Object Center"]["X"]
+        RSY = data["Red Team Data"]["Square"]["Object Center"]["Y"]
+
+        BTX = data["Red Team Data"]["Triangle"]["Object Center"]["X"]
+        BTY = data["Red Team Data"]["Triangle"]["Object Center"]["Y"]
+
+
+        RCX = data["Blue Team Data"]["Circle"]["Object Center"]["X"]
+        RCY = data["Blue Team Data"]["Circle"]["Object Center"]["Y"]
+
+        BSX = data["Blue Team Data"]["Square"]["Object Center"]["X"]
+        BSY = data["Blue Team Data"]["Square"]["Object Center"]["Y"]
+
+        RTX = data["Blue Team Data"]["Triangle"]["Object Center"]["X"]
+        RTY = data["Blue Team Data"]["Triangle"]["Object Center"]["Y"]
+     
+        
+        
+        
+        print("BX: ", BX)
+        print("RTX: ", RTX)
+        print("RCX: ", RCX)
+        if initialmove==9:
+            dir1="f"
+        if initialmove==8:
+            dir1="f"
+            if ((RTY > C2Y+((C3Y-C2Y)/3) )or (RTY< C3Y- ((C3Y-C2Y)/3))):
+                turncheck=turncheck+1
+                if turncheck>2:
+                    goalturn(RTX,RTY)
+                    initialmove=9
+                    turncheck=0
+        if initialmove ==7:
+            print("RTY: ",RTY)
+            print("Low Range: ",C2Y+((C3Y-C2Y)/4))
+            print("High Range: ",C3Y- ((C3Y-C2Y)/4))
+            if ((RTY > C2Y+((C3Y-C2Y)/4) )or (RTY< C3Y- ((C3Y-C2Y)/4))):
+                time.sleep(1)
+                goalturn(RTX,RTY)
+                time.sleep(1)
+            initialmove=8
+        if initialmove == 6:
+         
+            if (donefol==0):
+                followx(RTX,BX,20,1,i)
+                i=i+1
+            if (donefol == 1):
+                initialmove=1
+                i=0
+                donefol=0
+                initialmove = 7
+        if initialmove == 5:
+            time.sleep(1)
+            print (" done moving to Ball")
+            
+            ballturn(RTX,RTY,1)
+            time.sleep(1)
+            initialmove=6
+        if initialmove == 4:
+           
+            if stopcount1<1:
+                print("Second Robot Begin")
+                if (donefol == 0):
+                    followy(RTY, BY, 20, 1, i)
+                    i = i + 1
+                if (donefol == 1):
+                    initialmove = 1
+                    i = 0
+                    donefol = 0
+                    initialmove = 5
+
+        if initialmove == 2:
+            time.sleep(1)
+            print (" done moving Backward")
+            time.sleep(1)
+            initialmove=4
+        if initialmove == 1:
+
+                 initialmove=2
+        if initialmove == 0:
+            if (donefol==0):
+                followx(RCX,BX,20,1,i)
+                i=i+1
+            if (donefol == 1):
+                initialmove=1
+                i=0
+                donefol=0
+                initialmove = 1
+        if initialmove == -1:
+            time.sleep(1)
+            ballturn(RCX,RCY,0)
+            time.sleep(1)
+            initialmove = 0
+        if initialmove == -2:
+            
+            if (donefol==0):
+                followy(RCY,BY,18,1,i)
+                i=i+1
+            if (donefol == 1):
+                initialmove=1
+                i=0
+                donefol=0
+                initialmove = 1
+            else:
+                initialmove = -1
+
+
+                
+        #time.sleep()
+       
+        if delay1<10:
+            buff1="000"
+        elif delay1<100:
+            buff1="00"
+        elif delay1<1000:
+            buff1="0"
+        else:
+            buff1=""
+        if delay<10:
+            buff="000"
+        elif delay<100:
+            buff="00"
+        elif delay<1000:
+            buff="0"        
+        else:
+            buff=""        
+       
+                       
+        output1=diri+kicking+buff+str(abs(delay))+"w"
+        output=dir1+kicking1+buff1+str(abs(delay1))+"w"
+                
+        
+        client.publish('motorb',output1)
+        client.publish('motor',output)
+        print(output)
+        print(output1)
+        print(stopcount)
+        print (initialmove)
+            
+        
+            
+            
+            
+    
+    
+
+
