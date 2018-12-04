@@ -1,4 +1,4 @@
-
+// This was the code ran on the Arduino Due to test movement in all directions
 int speed1 =13;
 int speed2 =10;
 int back1= 12;
