@@ -1,0 +1,106 @@
+//Arduino Due connected to H-Bridge and Serially communicating with ESP
+// This code takes input message decodes it  to use for moving turning and kicking before kicking was taken off of the robot
+
+int speed2 =6; // left
+int speed1 =10; // right
+int back1= 12;
+int back2 = 9;
+int for2=8; ;
+int for1= 11;
+int kick=5;
+int ready1=1;
+float turndelay;
+String turn;
+char b[20];
+String a;
+String kickl, dir;
+
+void setup() {
+pinMode(speed1, OUTPUT);
+pinMode(speed2, OUTPUT);
+pinMode(back1, OUTPUT);
+pinMode(back2, OUTPUT);
+pinMode(for2, OUTPUT);
+pinMode(for1, OUTPUT);
+pinMode(kick, OUTPUT);
+Serial.begin(9600); 
+}
+ 
+void loop() {
+a=Serial.readStringUntil('w');// read the incoming data as string
+
+turndelay=a.substring(2,6).toFloat();
+kickl=a.substring(1,2);
+dir=a.substring(0,1);
+
+
+if (a.length()==6)
+{
+Serial.println(a);
+Serial.println(turndelay);
+  if (dir=="f"){
+    Serial.println("Moving Forward");
+    digitalWrite(for1, 1);
+    digitalWrite(for2, 1);
+    digitalWrite(back1,0);
+    digitalWrite(back2,0 );
+    analogWrite(speed1, 47);
+    analogWrite(speed2, 46);
+    delay(200);
+   }
+    if (dir=="b"){
+      Serial.println("Moving Backward");
+       digitalWrite(for1, 0);
+    digitalWrite(for2, 0);
+    digitalWrite(back1,1);
+    digitalWrite(back2,1 );
+    analogWrite(speed1, 47);
+    analogWrite(speed2, 46);
+    delay(200);
+     }
+     if(dir=="s"){
+     
+    digitalWrite(for1, 0);
+    digitalWrite(for2, 0);
+    digitalWrite(back1,0);
+    digitalWrite(back2,0);
+    analogWrite(speed1,0);
+    analogWrite(speed2,0);
+     }
+     if(kickl=="k"){
+      Serial.println(a.substring(1,2));
+      Serial.println("Kicking");
+     digitalWrite(kick,1);
+     delay(100);
+     }
+
+    
+
+
+     if (dir=="l"){
+    digitalWrite(for1,1);
+    digitalWrite(for2,0 );
+    digitalWrite(back1,0);
+    digitalWrite(back2,1 );
+    analogWrite(speed1, 56);
+    analogWrite(speed2,55);
+    Serial.println("turning left-> ");
+    Serial.print(turndelay);
+    delay(turndelay);
+     }
+     if (dir=="r"){
+    digitalWrite(for1, 0);
+    digitalWrite(for2,1);
+    digitalWrite(back1,1);
+    digitalWrite(back2,0 );
+    analogWrite(speed1, 56);
+    analogWrite(speed2,55);
+    delay(turndelay);
+     Serial.println("turning right-> ");
+    Serial.print(turndelay);
+     }
+    digitalWrite(kick,0);
+    delay(150);
+}
+}
+
