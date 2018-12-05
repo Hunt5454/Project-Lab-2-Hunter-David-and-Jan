@@ -1,3 +1,4 @@
+// used to subscribe to topic to recieve messages for instructions on the circle
 #include <ESP8266WiFi.h> 
 #include "Adafruit_MQTT.h" 
 #include "Adafruit_MQTT_Client.h" 
