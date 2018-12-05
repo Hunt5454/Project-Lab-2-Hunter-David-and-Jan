@@ -1,5 +1,5 @@
 
-
+ # code in use for full goal scoring procedure 
 import time,serial,json,requests,math,os
 import paho.mqtt.client as mqtt
 #ser =serial.Serial('/dev/ttyUSB0',9600)
