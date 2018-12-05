@@ -1,3 +1,4 @@
+// used to subscribe to mqtt and recieve messages for the triangle bot
 #include <ESP8266WiFi.h> 
 #include "Adafruit_MQTT.h" 
 #include "Adafruit_MQTT_Client.h" 
